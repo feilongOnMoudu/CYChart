@@ -47,7 +47,7 @@ static CGFloat bounceY = 20;
         [arr addObject:[NSString stringWithFormat:@"%.2f",(maxValue/self.yCount)* i]];
     }
     for (int i = 0; i < self.yCount; i++) {
-        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0, ((self.frame.size.height - bounceX -10)/ self.yCount) * i  + 10, bounceX-5, bounceY/2.0)];
+        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0, ((self.frame.size.height - bounceX -10)/ self.yCount) * i  + (bounceY/2.0)/2, bounceX-5, bounceY/2.0)];
         labelYdivision.tag = 2000 + i;
         labelYdivision.textAlignment = NSTextAlignmentRight;
         labelYdivision.textColor = [UIColor whiteColor];

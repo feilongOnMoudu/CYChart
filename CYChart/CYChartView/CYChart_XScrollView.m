@@ -8,6 +8,11 @@
 
 #import "CYChart_XScrollView.h"
 
+@interface CYChart_XScrollView ()
+
+@property (nonatomic,strong)NSMutableArray * lineChartLayerArray;
+@end
+
 @implementation CYChart_XScrollView
 
 static CGFloat bounceX = 40;
@@ -15,6 +20,7 @@ static CGFloat bounceX = 40;
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         self.backgroundColor = [UIColor lightGrayColor];
+        self.lineChartLayerArray = [NSMutableArray array];
         [self creatXText];
     }
     return self;
@@ -22,7 +28,6 @@ static CGFloat bounceX = 40;
 
 - (void)setXTextArray:(NSArray *)xTextArray {
     _xTextArray = xTextArray;
-    
 }
 
 - (void)setYTextArray:(NSArray *)yTextArray {
@@ -51,11 +56,11 @@ static CGFloat bounceX = 40;
 - (void)creatXText{
     CGFloat  month = 12;
     for (NSInteger i = 0; i < month; i++) {
-        UILabel * LabelMonth = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width-20)/month * (i + 1) , self.frame.size.height- bounceX, (self.frame.size.width - 20)/month, bounceX)];
+        UILabel * LabelMonth = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width-20)/month * (i + 1) -((self.frame.size.width - 20)/month)/2 , self.frame.size.height- bounceX, (self.frame.size.width - 20)/month, bounceX)];
         //LabelMonth.backgroundColor = [UIColor colorWithRed:(i*2 + 50) /255.0 green:(i*30 + 5) /255.0 blue:(i*20 + 15) /255.0 alpha:1];
         LabelMonth.tag = 1000 + i;
         LabelMonth.numberOfLines = 0;
-        LabelMonth.textAlignment = NSTextAlignmentLeft;
+        LabelMonth.textAlignment = NSTextAlignmentCenter;
         LabelMonth.text = [NSString stringWithFormat:@"%ld\n月",i+1];
         LabelMonth.font = [UIFont systemFontOfSize:10];
         [self addSubview:LabelMonth];
@@ -76,7 +81,27 @@ static CGFloat bounceX = 40;
     lineLayer.strokeColor = [UIColor greenColor].CGColor;
     lineLayer.path = path.CGPath;
     lineLayer.fillColor = nil; // 默认为blackColor
+    [self addAnimation:lineLayer];
+    [self.lineChartLayerArray addObject:lineLayer];
     [self.layer addSublayer:lineLayer];
+}
+
+- (void)addAnimation:(CAShapeLayer *)lineLayer {
+    CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    pathAnimation.duration = 2;
+    pathAnimation.repeatCount = 1;
+    pathAnimation.removedOnCompletion = YES;
+    pathAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
+    pathAnimation.toValue = [NSNumber numberWithFloat:1.0f];
+    [lineLayer addAnimation:pathAnimation forKey:@"strokeEnd"];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (int i = 0; i < self.lineChartLayerArray.count; i++) {
+        CAShapeLayer *lineLayer = self.lineChartLayerArray[i];
+        lineLayer.lineWidth = 1;
+        [self addAnimation:lineLayer];
+    }
 }
 
 - (void)createXLineDash {
